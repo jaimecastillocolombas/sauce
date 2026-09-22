@@ -1,0 +1,1259 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap');
+
+:root {
+  --bg: #f4f6f4;
+  --white: #ffffff;
+  --text: #1B2A4A;
+  --text-muted: #7a8a9a;
+  --accent: #8DC63F;
+  --accent-light: #f0f7e6;
+  --accent-dark: #6aa32e;
+  --danger: #c0392b;
+  --danger-dark: #a93226;
+  --danger-light: #fdf0ef;
+  --warning: #d4800a;
+  --warning-light: #fef9ee;
+  --border: #e2e8e2;
+  --shadow-sm: 0 1px 3px rgba(27,42,74,0.07);
+  --shadow-md: 0 4px 16px rgba(27,42,74,0.10);
+  --shadow-lg: 0 8px 32px rgba(27,42,74,0.14);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 20px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* Elimina el retraso de 300ms en tap en iOS/Android */
+button, input, textarea, select, [role="button"] {
+  touch-action: manipulation;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* ─── HEADER ─────────────────────────────────────────────────────────────── */
+/* Mobile-first: logo + nav apilados. Desktop: una sola fila. */
+header {
+  background: #E8F281;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* logo centrado: es el único elemento del header */
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 2px 12px rgba(27,42,74,0.18);
+}
+
+/* El logo es el propio botón que abre/cierra el menú de secciones */
+.menu-principal-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.menu-principal-trigger:focus-visible { outline: 2px solid #1B2A4A; outline-offset: 2px; }
+.logo-img { height: 36px; width: auto; object-fit: contain; }
+.menu-principal-info { display: flex; align-items: center; gap: 4px; }
+#menu-principal-seccion-actual { font-size: 14px; font-weight: 700; color: #1B2A4A; }
+.menu-principal-chevron { font-size: 11px; color: #1B2A4A; transition: transform 0.15s; }
+.menu-principal-trigger[aria-expanded="true"] .menu-principal-chevron { transform: rotate(180deg); }
+
+/* Menú desplegable con las 4 secciones, centrado bajo el logo */
+.menu-principal-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: 0 10px 28px rgba(27,42,74,0.28);
+  border: 1.5px solid var(--border);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 230px;
+  max-width: calc(100vw - 32px);
+  z-index: 51;
+}
+
+/* min-height: 44px — estándar Apple/Google para área táctil */
+.nav-btn {
+  flex: none;
+  width: 100%;
+  background: transparent;
+  color: #1B2A4A;
+  border: none;
+  padding: 12px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'DM Sans', sans-serif;
+  transition: background 0.15s;
+  white-space: nowrap;
+  text-align: left;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-start;
+}
+.nav-btn.active {
+  background: #1B2A4A;
+  color: #E8F281;
+  font-weight: 700;
+}
+
+main { padding: 16px; max-width: 780px; margin: 0 auto; }
+
+/* ─── TOOLBAR ────────────────────────────────────────────────────────────── */
+.toolbar { display: flex; gap: 10px; margin-bottom: 16px; align-items: stretch; flex-direction: column; }
+
+/* font-size: 16px es obligatorio — iOS Safari hace zoom automático si es < 16px */
+#btn-nuevo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 20px;
+  background: var(--accent);
+  color: #1B2A4A;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(141,198,63,0.35);
+  min-height: 52px;
+  width: 100%;
+}
+
+#buscador {
+  flex: 1;
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-family: 'DM Sans', sans-serif;
+  background: var(--white);
+  color: var(--text);
+  transition: border-color 0.15s;
+  outline: none;
+  min-height: 52px;
+}
+#buscador:focus { border-color: var(--accent); }
+#buscador::placeholder { color: var(--text-muted); }
+
+/* ─── LISTA PACIENTES ────────────────────────────────────────────────────── */
+#lista-pacientes { display: flex; flex-direction: column; gap: 10px; }
+
+.tarjeta-paciente {
+  background: var(--white);
+  padding: 16px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: 1.5px solid transparent;
+  transition: border-color 0.15s;
+  min-height: 72px;
+}
+.tarjeta-foto { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-light); flex-shrink: 0; }
+.tarjeta-avatar { width: 52px; height: 52px; border-radius: 50%; background: var(--accent-light); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 600; color: var(--accent); flex-shrink: 0; }
+.tarjeta-info { flex: 1; min-width: 0; }
+.tarjeta-nombre { font-weight: 600; font-size: 16px; margin-bottom: 2px; }
+.tarjeta-meta { font-size: 13px; color: var(--text-muted); margin-bottom: 3px; }
+.tarjeta-diagnostico { font-size: 14px; color: var(--text); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tarjeta-revision-badge { font-size: 12px; color: var(--text); font-weight: 600; margin-top: 4px; }
+.tarjeta-chevron { color: var(--text-muted); font-size: 20px; flex-shrink: 0; }
+
+/* ─── AGENDA ─────────────────────────────────────────────────────────────── */
+.agenda-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
+.agenda-top h2 { font-family: 'DM Serif Display', serif; font-size: 22px; font-weight: 400; }
+
+.vista-toggle { display: flex; background: var(--bg); border-radius: 10px; padding: 4px; gap: 4px; }
+.vista-btn {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+.vista-btn.active { background: var(--white); color: var(--text); font-weight: 700; box-shadow: var(--shadow-sm); }
+
+/* Navegación fecha */
+.nav-fecha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+/* 44×44 — estándar táctil mínimo */
+.nav-fecha-btn {
+  background: none;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  width: 44px;
+  height: 44px;
+  font-size: 22px;
+  cursor: pointer;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s;
+  flex-shrink: 0;
+}
+
+.nav-fecha-centro { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
+.nav-fecha-centro span { font-weight: 600; font-size: 16px; color: var(--text); text-align: center; }
+
+/* 16px obligatorio — iOS Safari hace zoom en inputs < 16px */
+#selector-dia {
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  color: var(--text-muted);
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  text-align: center;
+  outline: none;
+}
+
+/* Vista día */
+#lista-dia { display: flex; flex-direction: column; gap: 10px; }
+
+.cita-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  box-shadow: var(--shadow-sm);
+  border-left: 4px solid var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  min-height: 64px;
+}
+.cita-card.vencida { border-left-color: var(--danger); }
+.cita-card.hoy { border-left-color: var(--warning); }
+.cita-hora { font-size: 18px; font-weight: 700; color: var(--text); min-width: 52px; text-align: center; }
+.cita-hora.sin-hora { font-size: 13px; color: var(--text-muted); }
+.cita-info { flex: 1; }
+.cita-nombre { font-weight: 600; font-size: 15px; }
+.cita-nota { font-size: 13px; color: var(--text-muted); font-style: italic; margin-top: 2px; }
+.cita-badge { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 20px; white-space: nowrap; }
+.badge-verde { background: var(--accent-light); color: var(--text); }
+.badge-rojo { background: var(--danger-light); color: var(--danger); }
+.badge-naranja { background: var(--warning-light); color: var(--warning); }
+
+/* Vista semana — base */
+#grid-semana { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.semana-col { background: var(--white); border-radius: var(--radius-sm); overflow: hidden; box-shadow: var(--shadow-sm); min-height: 100px; }
+.semana-col-header { padding: 8px 4px; text-align: center; background: var(--bg); border-bottom: 1px solid var(--border); }
+.semana-dia-nombre { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); }
+.semana-dia-num { font-size: 16px; font-weight: 600; color: var(--text); line-height: 1; margin-top: 2px; }
+.semana-col.es-hoy .semana-col-header { background: var(--accent-light); }
+.semana-col.es-hoy .semana-dia-num { font-weight: 700; }
+.semana-citas { padding: 4px; display: flex; flex-direction: column; gap: 3px; }
+.semana-cita {
+  background: var(--accent-light);
+  border-radius: 5px;
+  padding: 3px 5px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 0.15s;
+  min-height: 22px;
+  display: flex;
+  align-items: center;
+}
+.semana-cita.vencida { background: var(--danger-light); color: var(--danger); }
+
+/* Vista mes */
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 16px; }
+.cal-dia-nombre { text-align: center; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); padding: 6px 0; }
+.cal-celda {
+  background: var(--white);
+  border-radius: var(--radius-sm);
+  min-height: 52px;
+  padding: 6px 4px;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: border-color 0.15s;
+  box-shadow: var(--shadow-sm);
+}
+.cal-celda.otro-mes { opacity: 0.35; }
+.cal-celda.es-hoy { border-color: var(--accent); }
+.cal-celda.seleccionado { background: var(--accent-light); border-color: var(--accent); }
+.cal-num { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; text-align: center; }
+.cal-celda.es-hoy .cal-num { font-weight: 700; }
+.cal-punto { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin: 2px auto; }
+.cal-punto.vencida { background: var(--danger); }
+
+#lista-mes-detalle { display: flex; flex-direction: column; gap: 8px; }
+.mes-detalle-titulo { font-size: 13px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin: 10px 0 6px; }
+
+/* ─── DATOS / CONFIGURACIÓN ──────────────────────────────────────────────── */
+.datos-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+.datos-header h2 { font-family: 'DM Serif Display', serif; font-size: 22px; font-weight: 400; }
+.tarjeta-datos { background: var(--white); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow-sm); border: 1.5px solid var(--border); }
+.tarjeta-datos h3 { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+.tarjeta-datos p { font-size: 14px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5; }
+
+/* Selector Ajustes/Datos dentro de la pestaña unificada de Configuración */
+.config-subtabs { margin-bottom: 20px; }
+.config-subtab { display: none; }
+.config-subtab.active { display: block; }
+
+/* Desplegable que agrupa un listado ya definido (items de tratamiento, catálogo de fármacos)
+   para que no ocupe toda la pantalla cuando ya hay muchos guardados */
+.lista-desplegable { margin-top: 4px; }
+.lista-desplegable summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  min-height: 44px;
+}
+.lista-desplegable summary::-webkit-details-marker { display: none; }
+.lista-desplegable summary::after {
+  content: '▾';
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-left: auto;
+  transition: transform 0.15s;
+}
+.lista-desplegable[open] summary::after { transform: rotate(180deg); }
+.lista-desplegable[open] summary { margin-bottom: 10px; }
+
+#btn-exportar {
+  width: 100%;
+  padding: 14px;
+  background: var(--accent);
+  color: #1B2A4A;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  min-height: 52px;
+  transition: background 0.15s;
+}
+
+.btn-importar-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 14px;
+  background: var(--bg);
+  color: var(--text);
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+  min-height: 52px;
+}
+
+#btn-descargar-calendario {
+  width: 100%;
+  padding: 14px;
+  background: var(--bg);
+  color: var(--text);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  min-height: 52px;
+  transition: background 0.15s;
+}
+
+/* ─── TOOLBAR SUB ────────────────────────────────────────────────────────── */
+.toolbar-sub { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px; }
+#contador-pacientes { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+
+#selector-orden {
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-family: 'DM Sans', sans-serif;
+  background: var(--white);
+  color: var(--text);
+  outline: none;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+/* ─── BADGES REVISIÓN ────────────────────────────────────────────────────── */
+.tarjeta-revision-proxima { color: var(--accent-dark); font-weight: 700; }
+.tarjeta-revision-hoy { color: var(--warning); font-weight: 700; }
+.tarjeta-revision-vencida { color: var(--danger); font-weight: 700; }
+
+/* ─── BOTÓN HOY ──────────────────────────────────────────────────────────── */
+#btn-hoy, #btn-hoy-resumen-medicacion {
+  padding: 10px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 7px;
+  background: var(--white);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s;
+  min-height: 44px;
+}
+
+/* ─── CONFIGURACIÓN ──────────────────────────────────────────────────────── */
+/* Override inline styles en sección de configuración */
+#input-nuevo-item {
+  font-size: 16px !important;
+  min-height: 48px !important;
+  padding: 12px 14px !important;
+}
+#btn-agregar-item {
+  font-size: 16px !important;
+  min-height: 48px !important;
+  padding: 12px 20px !important;
+}
+
+/* ─── MODAL ──────────────────────────────────────────────────────────────── */
+/* Mobile: bottom-sheet que sube desde abajo. Desktop: diálogo centrado (media query). */
+.modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 100;
+  backdrop-filter: blur(4px);
+}
+.oculto { display: none !important; }
+
+@keyframes modalUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes modalIn { from { opacity: 0; transform: translateY(12px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+/*
+  Estructura del modal: flex column.
+  modal-sticky-header — cabecera fija (sin scroll)
+  modal-body          — contenido scrollable (flex: 1, overflow-y: auto)
+  modal-botones       — botones fijos abajo (sin scroll)
+*/
+.modal-contenido {
+  background: var(--white);
+  padding: 16px 16px 0;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  width: 100%;
+  max-width: 100%;
+  max-height: 94vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  animation: modalUp 0.25s ease;
+}
+
+.modal-contenido h2 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 20px;
+  font-weight: 400;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+/* La cabecera no scroll: vive fuera del área scrollable */
+.modal-sticky-header {
+  flex-shrink: 0;
+}
+
+#modal-header-paciente { flex-shrink: 0; }
+
+/* Área scrollable — solo esta parte hace scroll */
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  flex: 1;
+  padding-bottom: 8px;
+}
+
+/* Elimina el scroll anidado de la lista de evolutivos */
+#evoluciones-list {
+  max-height: none !important;
+  overflow-y: visible !important;
+}
+
+.modal-subtabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 4px;
+  border-bottom: 2px solid var(--border);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  flex-shrink: 0;
+}
+.modal-subtabs::-webkit-scrollbar { display: none; }
+
+.subtab-btn {
+  background: none;
+  border: none;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  white-space: nowrap;
+  transition: color 0.15s;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+}
+.subtab-btn.active { color: var(--text); border-bottom-color: var(--accent); }
+
+.subtab-content { display: none; flex-direction: column; gap: 10px; }
+.subtab-content.active { display: flex; }
+
+.modal-section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-top: 8px; }
+.modal-contenido label { font-weight: 500; font-size: 14px; color: var(--text-muted); margin-top: 6px; display: block; }
+
+/* CRÍTICO: font-size >= 16px evita que iOS Safari haga zoom automático al enfocar */
+.modal-contenido input[type="text"],
+.modal-contenido input[type="date"],
+.modal-contenido input[type="time"],
+.modal-contenido select,
+.modal-contenido textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+  background: var(--white);
+  transition: border-color 0.15s;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.modal-contenido input:focus, .modal-contenido textarea:focus, .modal-contenido select:focus { border-color: var(--accent); }
+
+.modal-contenido textarea { height: 88px; resize: vertical; }
+.modal-contenido .textarea-compacto { height: 72px !important; }
+.modal-contenido .textarea-grande { height: 160px !important; }
+.modal-contenido .textarea-extra-grande { height: 200px !important; }
+
+/* Override inline font-size del botón añadir evolutivo */
+#btn-añadir-evolucion {
+  font-size: 16px !important;
+  min-height: 52px !important;
+  padding: 14px 20px !important;
+}
+
+.modal-divider { height: 1px; background: var(--border); margin: 6px 0; }
+
+/* Botones fijos al fondo del modal — no hacen scroll */
+.modal-botones {
+  display: flex;
+  gap: 8px;
+  flex-direction: column;
+  flex-shrink: 0;
+  padding: 12px 0 24px; /* 24px = espacio para barra home de iPhone */
+  background: var(--white);
+}
+.modal-botones button {
+  width: 100%;
+  padding: 14px 12px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: background 0.15s;
+  min-height: 52px;
+}
+#btn-cancelar { background: var(--bg); color: var(--text-muted); }
+#btn-guardar { background: var(--accent); color: #1B2A4A; font-weight: 700; }
+.btn-eliminar { background: var(--danger-light) !important; color: var(--danger) !important; }
+
+/* ─── FOTO / IMÁGENES ────────────────────────────────────────────────────── */
+.foto-wrapper { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 12px 0; }
+#preview-foto { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent-light); display: none; }
+
+.foto-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  padding: 10px 18px;
+  border: 1.5px solid var(--accent);
+  border-radius: 20px;
+  transition: background 0.15s;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.imagenes-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 4px 0;
+  margin-top: 4px;
+}
+
+#preview-imagenes { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+#preview-videos { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+.img-wrapper { position: relative; display: inline-block; }
+.video-wrapper { position: relative; display: inline-block; }
+
+.img-wrapper .img-prueba {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  cursor: pointer;
+  display: block;
+}
+.video-wrapper video {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  cursor: pointer;
+  background: #000;
+  display: block;
+}
+
+/* Visual: círculo de 28px. Área táctil: 44px via ::after */
+.img-wrapper .btn-eliminar-img,
+.video-wrapper .btn-eliminar-video {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--danger);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-md);
+  z-index: 1;
+}
+/* Expande el área táctil a 44×44px sin cambiar el tamaño visual */
+.img-wrapper .btn-eliminar-img::after,
+.video-wrapper .btn-eliminar-video::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 44px;
+}
+
+#edad-calculada { font-size: 13px; color: var(--text); font-weight: 600; margin-top: 2px; }
+
+/* ─── EMPTY STATE ─────────────────────────────────────────────────────────── */
+.empty-state { text-align: center; padding: 48px 24px; color: var(--text-muted); }
+.empty-state .empty-icon { font-size: 40px; margin-bottom: 12px; opacity: 0.5; }
+.empty-state p { font-size: 15px; }
+
+/* ─── BACKUP BANNER ───────────────────────────────────────────────────────── */
+#backup-banner {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 8px 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  box-shadow: var(--shadow-md);
+  z-index: 200;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  max-width: 420px;
+  width: calc(100% - 32px);
+  animation: slideUp 0.3s ease;
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateX(-50%) translateY(16px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+/* Área táctil 44×44px para el botón cerrar */
+#backup-banner-cerrar {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 18px;
+  cursor: pointer;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+/* ─── CABECERA FOTO CLICKABLE ─────────────────────────────────────────────── */
+#modal-header-foto:hover,
+#modal-header-avatar:hover { opacity: 0.8; transition: opacity 0.15s; }
+
+/* ─── TOAST NOTIFICACIONES ───────────────────────────────────────────────── */
+.app-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(16px);
+  background: #1B2A4A;
+  color: #fff;
+  padding: 14px 20px;
+  border-radius: var(--radius);
+  font-size: 15px;
+  font-weight: 500;
+  z-index: 9999;
+  box-shadow: var(--shadow-lg);
+  max-width: calc(100vw - 32px);
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+}
+.app-toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+.app-toast.app-toast-exito { background: #2e7d32; }
+.app-toast.app-toast-error { background: var(--danger); }
+.app-toast.app-toast-aviso { background: var(--warning); }
+.app-toast.app-toast-info { background: #1B2A4A; }
+
+/* ─── CONFIRM / PROMPT DIALOG ────────────────────────────────────────────── */
+/* Mobile: bottom-sheet. Desktop: centrado (media query). */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(3px);
+}
+.confirm-box {
+  background: var(--white);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: 24px 20px 32px;
+  width: 100%;
+  max-width: 100%;
+  box-shadow: var(--shadow-lg);
+  animation: modalUp 0.2s ease;
+}
+.confirm-mensaje {
+  font-size: 16px;
+  color: var(--text);
+  line-height: 1.6;
+  margin-bottom: 20px;
+  white-space: pre-line;
+}
+.confirm-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+  outline: none;
+  margin-bottom: 16px;
+  transition: border-color 0.15s;
+  -webkit-appearance: none;
+  appearance: none;
+  min-height: 52px;
+}
+.confirm-input:focus { border-color: var(--accent); }
+.confirm-botones { display: flex; gap: 10px; }
+.confirm-btn-cancel {
+  flex: 1;
+  padding: 14px;
+  background: var(--bg);
+  color: var(--text-muted);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  min-height: 52px;
+  transition: background 0.15s;
+}
+.confirm-btn-ok {
+  flex: 1;
+  padding: 14px;
+  background: var(--accent);
+  color: #1B2A4A;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  min-height: 52px;
+  transition: background 0.15s;
+}
+.confirm-btn-ok.peligro { background: var(--danger); color: #fff; }
+
+/* ─── MEJORAS ESCRITORIO (≥ 640px) ───────────────────────────────────────── */
+@media (min-width: 640px) {
+  body { font-size: 15px; }
+
+  /* Header: más alto y con el logo algo más grande */
+  header { padding: 0 24px; height: 64px; }
+  .logo-img { height: 40px; }
+
+  main { padding: 24px; }
+
+  /* Toolbar: fila horizontal en escritorio */
+  .toolbar { flex-direction: row; align-items: center; gap: 12px; }
+  #btn-nuevo { width: auto; font-size: 14px; min-height: 42px; padding: 10px 20px; }
+  #buscador { width: auto; font-size: 14px; min-height: 42px; padding: 10px 16px; }
+
+  .tarjeta-nombre { font-size: 15px; }
+  .tarjeta-paciente { min-height: 64px; }
+
+  /* Botones agenda más pequeños en escritorio */
+  .nav-fecha-btn { width: 36px; height: 36px; font-size: 20px; }
+  .vista-btn { padding: 7px 18px; min-height: 36px; font-size: 13px; }
+  #btn-hoy, #btn-hoy-resumen-medicacion { padding: 7px 16px; min-height: 36px; font-size: 13px; }
+  #selector-orden { font-size: 13px; min-height: 38px; padding: 6px 10px; }
+
+  /* Modal: diálogo centrado en escritorio (no bottom-sheet) */
+  .modal { align-items: center; padding: 16px; }
+  .modal-contenido {
+    border-radius: var(--radius-lg);
+    max-width: 520px;
+    max-height: 88vh;
+    animation: modalIn 0.2s ease;
+    padding: 28px 28px 0;
+  }
+  .modal-contenido h2 { font-size: 22px; }
+  .modal-contenido label { font-size: 13px; }
+  /* Puede reducir a 14px en escritorio: iOS zoom no aplica */
+  .modal-contenido input[type="text"],
+  .modal-contenido input[type="date"],
+  .modal-contenido input[type="time"],
+  .modal-contenido select,
+  .modal-contenido textarea { font-size: 14px; padding: 10px 14px; }
+  .modal-contenido textarea { height: 80px; }
+  .modal-contenido .textarea-compacto { height: 64px !important; }
+  .modal-contenido .textarea-grande { height: 180px !important; }
+  .modal-contenido .textarea-extra-grande { height: 240px !important; }
+
+  .subtab-btn { font-size: 13px; min-height: 40px; }
+
+  .modal-botones { flex-direction: row; padding: 12px 0 28px; }
+  .modal-botones button { font-size: 14px; min-height: 46px; }
+  .btn-eliminar { flex: 0.7 !important; width: auto !important; }
+
+  /* Confirm: centrado en escritorio */
+  .confirm-overlay { align-items: center; padding: 16px; }
+  .confirm-box { border-radius: var(--radius-lg); padding: 28px 24px 20px; max-width: 380px; animation: modalIn 0.18s ease; }
+  .confirm-botones { justify-content: flex-end; }
+  .confirm-btn-cancel, .confirm-btn-ok { flex: none; padding: 10px 20px; font-size: 14px; min-height: 44px; }
+  .confirm-input { font-size: 14px; min-height: 44px; }
+
+  /* Efectos hover — solo en dispositivos con puntero real (ratón/trackpad) */
+  .tarjeta-paciente:hover { border-color: var(--accent); box-shadow: var(--shadow-md); transform: translateY(-1px); }
+  .cita-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+  #btn-nuevo:hover { background: var(--accent-dark); transform: translateY(-1px); }
+  .nav-fecha-btn:hover { border-color: var(--accent); color: var(--text); }
+  .menu-principal-trigger:hover { background: rgba(0,0,0,0.08); }
+  .nav-btn:hover:not(.active) { background: rgba(0,0,0,0.08); }
+  #btn-hoy:hover, #btn-hoy-resumen-medicacion:hover { border-color: var(--accent); background: var(--accent-light); }
+  .semana-cita:hover { background: var(--accent); color: white; }
+  .semana-cita.vencida:hover { background: var(--danger); color: white; }
+  .img-wrapper .img-prueba:hover { transform: scale(1.05); border-color: var(--accent); }
+  .video-wrapper video:hover { transform: scale(1.05); border-color: var(--accent); }
+  .img-wrapper .btn-eliminar-img:hover,
+  .video-wrapper .btn-eliminar-video:hover { background: var(--danger-dark); transform: scale(1.1); }
+  .foto-label:hover { background: var(--accent-light); }
+  .btn-importar-label:hover { border-color: var(--accent); background: var(--accent-light); }
+  #btn-exportar:hover { background: var(--accent-dark); }
+  #btn-descargar-calendario:hover { border-color: var(--accent); background: var(--accent-light); }
+  .cal-celda:hover { border-color: var(--accent); }
+  .confirm-btn-cancel:hover { background: var(--border); }
+  .confirm-btn-ok:hover { background: var(--accent-dark); }
+  .confirm-btn-ok.peligro:hover { background: var(--danger-dark); }
+  .subtab-btn:hover { color: var(--text); }
+}
+
+/* ─── MEDICACIÓN (ficha de paciente, catálogo y resumen) ────────────────── */
+.campo-opcional { font-weight: 400 !important; text-transform: none !important; letter-spacing: 0 !important; font-size: 12px !important; color: var(--text-muted); }
+
+#med-farmaco-info-catalogo:empty, #med-sugerencia-unidades:empty { display: none; margin: 0; }
+#med-farmaco-info-catalogo {
+  font-size: 12px;
+  color: var(--accent-dark);
+  background: var(--accent-light);
+  padding: 8px 10px;
+  border-radius: 8px;
+  margin-top: 6px;
+  font-weight: 500;
+}
+#med-sugerencia-unidades {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.btn-usar-sugerencia {
+  background: var(--accent);
+  color: #1B2A4A;
+  border: none;
+  border-radius: 14px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.fila-2-columnas { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.fila-2-columnas > div { display: flex; flex-direction: column; }
+.fila-3-columnas { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+.fila-3-columnas > div { display: flex; flex-direction: column; }
+
+.label-catalogo-farmaco { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; display: block; }
+.input-catalogo-farmaco {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+}
+
+.check-inline {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px !important;
+  color: var(--text) !important;
+  font-weight: 500 !important;
+  cursor: pointer;
+  margin-top: 10px !important;
+}
+.check-inline input[type="checkbox"] { width: 18px; height: 18px; flex-shrink: 0; cursor: pointer; }
+
+.medicacion-form-botones { display: flex; gap: 8px; margin-top: 12px; }
+.medicacion-form-botones button {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  min-height: 46px;
+  transition: background 0.15s;
+}
+.btn-secundario { background: var(--bg); color: var(--text-muted); }
+.btn-primario { background: var(--accent); color: #1B2A4A; font-weight: 700; }
+
+.empty-state-mini { text-align: center; padding: 16px; color: var(--text-muted); font-size: 13px; background: var(--bg); border-radius: var(--radius-sm); }
+
+.medicacion-card {
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+  border-left: 3px solid var(--accent);
+  overflow: hidden;
+}
+.medicacion-card-finalizada { border-left-color: var(--border); opacity: 0.85; }
+.medicacion-card summary {
+  padding: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  list-style: none;
+}
+.medicacion-card summary::-webkit-details-marker { display: none; }
+.medicacion-card summary::after {
+  content: '▾';
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-left: auto;
+  transition: transform 0.15s;
+}
+.medicacion-card[open] summary::after { transform: rotate(180deg); }
+.medicacion-farmaco { font-weight: 700; font-size: 14px; color: var(--text); }
+.medicacion-resumen-linea { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+.medicacion-card-body { padding: 0 12px 12px; }
+.medicacion-card-acciones { display: flex; gap: 6px; flex-shrink: 0; justify-content: flex-end; margin-bottom: 4px; }
+.btn-icono-editar, .btn-icono-eliminar {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  width: 30px;
+  height: 30px;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.btn-icono-eliminar { color: var(--danger); }
+.medicacion-detalle { font-size: 13px; color: var(--text-muted); margin-top: 6px; }
+.medicacion-total { font-size: 13px; font-weight: 700; color: var(--accent-dark); margin-top: 4px; }
+.medicacion-total-aviso { color: var(--warning); font-weight: 600; }
+.medicacion-notas { font-size: 12px; color: var(--text-muted); margin-top: 4px; font-style: italic; }
+
+#medicacion-resumen-cita:empty { display: none; }
+.medicacion-resumen-cita-info, .medicacion-resumen-cita-aviso {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.medicacion-resumen-cita-info { background: var(--accent-light); color: var(--accent-dark); font-weight: 600; }
+.medicacion-resumen-cita-aviso { background: var(--warning-light); color: var(--warning); font-weight: 500; }
+
+/* Catálogo de fármacos — Configuración */
+.farmaco-card {
+  background: var(--white);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+}
+.farmaco-card-fila { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.farmaco-nombre { font-size: 14px; font-weight: 600; flex: 1; min-width: 0; }
+.farmaco-caja { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+.farmaco-card .btn-icono-editar { margin-left: auto; }
+
+/* Formulario de edición desplegable, con los mismos campos que al añadir un fármaco */
+.farmaco-card-edit { margin-top: 12px; padding-top: 12px; border-top: 1.5px solid var(--border); }
+
+/* Resumen global de medicación — alertas de fin de tratamiento */
+.alerta-medicacion-bloque {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  border: 1.5px solid var(--border);
+  padding: 14px;
+  margin-bottom: 12px;
+}
+.alerta-medicacion-bloque-urgente { border-color: var(--warning); background: var(--warning-light); }
+.alerta-medicacion-titulo { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+.alerta-medicacion-fila {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.15s;
+}
+.alerta-medicacion-fila:hover, .alerta-medicacion-fila:focus-visible { background: rgba(0,0,0,0.04); outline: none; }
+.alerta-medicacion-paciente { font-weight: 600; color: var(--text); }
+.alerta-medicacion-fecha { color: var(--text-muted); font-weight: 600; white-space: nowrap; }
+.alerta-medicacion-bloque-urgente .alerta-medicacion-fecha { color: var(--warning); }
+
+/* Agrupación de alertas por fármaco dentro de cada bloque */
+.alerta-medicacion-grupo { margin-bottom: 10px; }
+.alerta-medicacion-grupo:last-child { margin-bottom: 0; }
+.alerta-medicacion-grupo-titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  padding: 6px 10px 2px;
+}
+.alerta-medicacion-grupo-badge {
+  background: var(--warning);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.alerta-medicacion-bloque:not(.alerta-medicacion-bloque-urgente) .alerta-medicacion-grupo-badge { background: var(--accent); }
+.alerta-medicacion-grupo .alerta-medicacion-fila { padding-left: 10px; }
+
+/* Filtro de alertas por fármaco / paciente */
+.filtro-alertas-medicacion:not(:empty) {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.filtro-alertas-select {
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  font-size: 13px;
+  color: var(--text);
+  max-width: 100%;
+}
+.btn-limpiar-filtro-alertas {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 4px;
+}
+.btn-limpiar-filtro-alertas:hover { color: var(--text); text-decoration: underline; }
+
+.resumen-medicacion-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--white);
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  border: 1.5px solid var(--border);
+  margin-bottom: 12px;
+  font-size: 14px;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.resumen-medicacion-total strong { color: var(--accent-dark); font-size: 16px; }
+
+.resumen-medicacion-card {
+  background: var(--white);
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+.resumen-medicacion-card summary {
+  padding: 14px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  list-style: none;
+}
+.resumen-medicacion-card summary::-webkit-details-marker { display: none; }
+.resumen-medicacion-nombre { font-weight: 700; font-size: 14px; }
+.resumen-medicacion-cifras { font-size: 13px; color: var(--text-muted); font-weight: 600; }
+.resumen-medicacion-pacientes { padding: 0 14px 14px; display: flex; flex-direction: column; gap: 4px; }
+.resumen-medicacion-paciente { font-size: 13px; color: var(--text-muted); padding: 6px 10px; background: var(--bg); border-radius: 6px; }
+.resumen-medicacion-aviso { padding: 0 14px 14px; font-size: 12px; color: var(--warning); }
+
+/* ─── VISTA SEMANA EN MÓVIL ──────────────────────────────────────────────── */
+/* En pantalla estrecha (< 640px), los 7 bloques de cita muestran solo color.
+   El texto es demasiado pequeño para leer: se oculta con font-size: 0.
+   La funcionalidad de tap permanece intacta. */
+@media (max-width: 639px) {
+  #grid-semana { gap: 2px; }
+  .semana-col { min-height: 0; }
+  .semana-col-header { padding: 6px 2px; }
+  .semana-dia-nombre { font-size: 9px; letter-spacing: 0; }
+  .semana-dia-num { font-size: 14px; }
+  .semana-citas { padding: 3px 2px; gap: 2px; }
+  .semana-cita {
+    font-size: 0;        /* oculta texto — demasiado pequeño a 49px de ancho */
+    min-height: 14px;
+    border-radius: 3px;
+    padding: 0;
+    width: 100%;
+  }
+}

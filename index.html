@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAUCE - Historias Clínicas</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="SAUCE">
+  <meta name="theme-color" content="#1B2A4A">
+</head>
+<body>
+
+  <header>
+    <button type="button" id="btn-menu-principal" class="menu-principal-trigger" aria-haspopup="true" aria-expanded="false" aria-controls="menu-principal-dropdown">
+      <img src="logo.png" alt="SAUCE ONG" class="logo-img">
+      <span class="menu-principal-info">
+        <span id="menu-principal-seccion-actual">Pacientes</span>
+        <span class="menu-principal-chevron">▾</span>
+      </span>
+    </button>
+    <nav id="menu-principal-dropdown" class="menu-principal-dropdown oculto" role="menu" aria-label="Secciones">
+      <button class="nav-btn active" role="menuitem" onclick="mostrarSeccion('pacientes', this)">Pacientes</button>
+      <button class="nav-btn" role="menuitem" onclick="mostrarSeccion('agenda', this)">Agenda</button>
+      <button class="nav-btn" role="menuitem" onclick="mostrarSeccion('medicacion', this)"><span class="nav-btn-icon">💊</span> Medicación</button>
+      <button class="nav-btn" role="menuitem" onclick="mostrarSeccion('configuracion', this)"><span class="nav-btn-icon">⚙️</span> Configuración</button>
+    </nav>
+  </header>
+
+  <!-- PACIENTES -->
+  <main id="seccion-pacientes">
+    <div class="toolbar">
+      <button id="btn-nuevo">+ Nuevo paciente</button>
+      <input type="text" id="buscador" placeholder="🔍 Buscar por nombre o ID..." aria-label="Buscar paciente por nombre o ID">
+    </div>
+    <div class="toolbar-sub">
+      <span id="contador-pacientes" aria-live="polite" aria-atomic="true"></span>
+      <select id="selector-orden">
+        <option value="nombre">A → Z</option>
+        <option value="reciente">Más reciente</option>
+        <option value="cita">Próxima cita</option>
+      </select>
+    </div>
+    <div id="lista-pacientes"></div>
+  </main>
+
+  <!-- AGENDA -->
+  <main id="seccion-agenda" class="oculto">
+    <div class="agenda-top">
+      <h2>Agenda</h2>
+      <button id="btn-hoy" onclick="irAHoy()">Hoy</button>
+      <div class="vista-toggle">
+        <button class="vista-btn active" id="btn-vista-dia" onclick="cambiarVista('dia', this)">Día</button>
+        <button class="vista-btn" id="btn-vista-semana" onclick="cambiarVista('semana', this)">Semana</button>
+        <button class="vista-btn" id="btn-vista-mes" onclick="cambiarVista('mes', this)">Mes</button>
+      </div>
+    </div>
+
+    <!-- Vista día -->
+    <div id="vista-dia">
+      <div class="nav-fecha">
+        <button class="nav-fecha-btn" onclick="cambiarDia(-1)" aria-label="Día anterior">‹</button>
+        <div class="nav-fecha-centro">
+          <span id="label-dia-semana"></span>
+          <input type="date" id="selector-dia" onchange="seleccionarDia(this.value)" aria-label="Seleccionar fecha">
+        </div>
+        <button class="nav-fecha-btn" onclick="cambiarDia(1)" aria-label="Día siguiente">›</button>
+      </div>
+      <div id="lista-dia"></div>
+    </div>
+
+    <!-- Vista semana -->
+    <div id="vista-semana" class="oculto">
+      <div class="nav-fecha">
+        <button class="nav-fecha-btn" onclick="cambiarSemana(-1)" aria-label="Semana anterior">‹</button>
+        <div class="nav-fecha-centro">
+          <span id="label-semana"></span>
+        </div>
+        <button class="nav-fecha-btn" onclick="cambiarSemana(1)" aria-label="Semana siguiente">›</button>
+      </div>
+      <div id="grid-semana"></div>
+    </div>
+
+    <!-- Vista mes -->
+    <div id="vista-mes" class="oculto">
+      <div class="nav-fecha">
+        <button class="nav-fecha-btn" onclick="cambiarMes(-1)" aria-label="Mes anterior">‹</button>
+        <div class="nav-fecha-centro">
+          <span id="label-mes"></span>
+        </div>
+        <button class="nav-fecha-btn" onclick="cambiarMes(1)" aria-label="Mes siguiente">›</button>
+      </div>
+      <div id="calendario-mes"></div>
+      <div id="lista-mes-detalle"></div>
+    </div>
+  </main>
+
+  <!-- MEDICACIÓN (resumen / pedidos) -->
+  <main id="seccion-medicacion" class="oculto">
+    <div class="agenda-top">
+      <h2>💊 Medicación</h2>
+      <button id="btn-hoy-resumen-medicacion" onclick="irAHoyResumenMedicacion()">Hoy</button>
+      <div class="vista-toggle">
+        <button class="vista-btn active" id="btn-vista-resumen-semana" onclick="cambiarVistaResumenMedicacion('semana', this)">Semana</button>
+        <button class="vista-btn" id="btn-vista-resumen-mes" onclick="cambiarVistaResumenMedicacion('mes', this)">Mes</button>
+      </div>
+    </div>
+    <div class="nav-fecha">
+      <button class="nav-fecha-btn" onclick="navegarResumenMedicacion(-1)" aria-label="Periodo anterior">‹</button>
+      <div class="nav-fecha-centro">
+        <span id="label-resumen-medicacion"></span>
+      </div>
+      <button class="nav-fecha-btn" onclick="navegarResumenMedicacion(1)" aria-label="Periodo siguiente">›</button>
+    </div>
+    <div id="filtro-alertas-medicacion" class="filtro-alertas-medicacion"></div>
+    <div id="alertas-fin-medicacion"></div>
+    <div id="resumen-medicacion-resultado" style="margin-top:16px;"></div>
+  </main>
+
+  <!-- CONFIGURACIÓN (Ajustes + Datos, unificadas) -->
+  <main id="seccion-configuracion" class="oculto">
+    <div class="datos-header"><h2>⚙️ Configuración</h2></div>
+
+    <div class="vista-toggle config-subtabs">
+      <button class="vista-btn active" id="btn-config-subtab-ajustes" onclick="cambiarConfigSubtab('ajustes', this)">🔧 Ajustes</button>
+      <button class="vista-btn" id="btn-config-subtab-datos" onclick="cambiarConfigSubtab('datos', this)">💾 Datos</button>
+    </div>
+
+    <!-- AJUSTES -->
+    <div id="config-subtab-ajustes" class="config-subtab active">
+      <div class="tarjeta-datos">
+        <h3>✓ Gestionar Items de Tratamiento</h3>
+        <p>Define los ítems de tratamiento que aparecerán en cada paciente. Se añadirán automáticamente a todos.</p>
+        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+          <input type="text" id="input-nuevo-item" placeholder="Ej: Fisioterapia" style="flex: 1; min-width: 0; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px; font-family: 'DM Sans', sans-serif;">
+          <button id="btn-agregar-item" style="background: var(--accent); color: white; border: none; border-radius: 8px; padding: 10px 20px; font-weight: 600; cursor: pointer; white-space: nowrap;">+ Agregar</button>
+        </div>
+        <details class="lista-desplegable" id="desplegable-items">
+          <summary>Items definidos (<span id="contador-items">0</span>)</summary>
+          <div id="lista-items" style="display: flex; flex-direction: column; gap: 8px;"></div>
+        </details>
+      </div>
+      <div class="tarjeta-datos" style="margin-top:16px;">
+        <h3>💊 Catálogo de Fármacos</h3>
+        <p>Define cada fármaco: cuántos mg trae cada unidad (opcional, solo para que la app te sugiera la dosis), cómo se llama esa unidad, y cuántas unidades trae la caja. Así el resumen de medicación puede calcular cuántas cajas comprar sin mezclar mg con comprimidos.</p>
+        <label for="input-nuevo-farmaco-nombre" class="label-catalogo-farmaco">Nombre del fármaco</label>
+        <input type="text" id="input-nuevo-farmaco-nombre" placeholder="Ej: Baclofeno" class="input-catalogo-farmaco">
+        <div class="fila-3-columnas" style="margin-top: 8px;">
+          <div>
+            <label for="input-nuevo-farmaco-concentracion" class="label-catalogo-farmaco">mg / unidad</label>
+            <input type="number" id="input-nuevo-farmaco-concentracion" placeholder="Ej: 10" min="0" step="any" class="input-catalogo-farmaco">
+          </div>
+          <div>
+            <label for="input-nuevo-farmaco-unidad" class="label-catalogo-farmaco">Unidad</label>
+            <input type="text" id="input-nuevo-farmaco-unidad" placeholder="comprimidos" class="input-catalogo-farmaco">
+          </div>
+          <div>
+            <label for="input-nuevo-farmaco-caja" class="label-catalogo-farmaco">Unid. / caja</label>
+            <input type="number" id="input-nuevo-farmaco-caja" placeholder="Ej: 30" min="0" step="1" class="input-catalogo-farmaco">
+          </div>
+        </div>
+        <button id="btn-agregar-farmaco" style="background: var(--accent); color: white; border: none; border-radius: 8px; padding: 10px 20px; font-weight: 600; cursor: pointer; white-space: nowrap; width: 100%; margin: 12px 0;">+ Agregar fármaco</button>
+        <details class="lista-desplegable" id="desplegable-farmacos">
+          <summary>Fármacos en el catálogo (<span id="contador-farmacos">0</span>)</summary>
+          <div id="lista-farmacos" style="display: flex; flex-direction: column; gap: 8px;"></div>
+        </details>
+      </div>
+    </div>
+
+    <!-- DATOS -->
+    <div id="config-subtab-datos" class="config-subtab">
+      <div class="tarjeta-datos">
+        <h3>⬇️ Exportar datos</h3>
+        <p>Guarda todos los pacientes en un archivo en tu dispositivo.</p>
+        <button id="btn-exportar">Exportar copia de seguridad</button>
+      </div>
+      <div class="tarjeta-datos" style="margin-top:16px;">
+        <h3>⬆️ Importar datos</h3>
+        <p>Carga una copia de seguridad anterior. Los pacientes existentes se mantendrán y se fusionarán con los de la copia.</p>
+        <label for="input-importar" class="btn-importar-label">📂 Seleccionar archivo de copia</label>
+        <input type="file" id="input-importar" accept=".json" style="display:none;">
+      </div>
+      <div id="msg-importar" style="margin-top:12px;color:var(--accent);font-weight:600;display:none;"></div>
+      <div class="tarjeta-datos" style="margin-top:16px;">
+        <h3>📅 Descargar Calendario</h3>
+        <p>Exporta todas las citas programadas a tu calendario del iPhone o dispositivo.</p>
+        <button id="btn-descargar-calendario">Descargar Calendario</button>
+      </div>
+      <div class="tarjeta-datos" style="margin-top:16px;">
+        <h3>💾 Almacenamiento Local</h3>
+        <p>Estado actual del almacenamiento en este dispositivo. Las fotos y vídeos se guardan aquí automáticamente.</p>
+        <div id="info-almacenamiento"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- MODAL PACIENTE -->
+  <div id="modal" class="modal oculto" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+    <div class="modal-contenido">
+      <!-- CABECERA STICKY (título + foto/nombre + pestañas) -->
+      <div class="modal-sticky-header">
+        <h2 id="modal-titulo">Nuevo paciente</h2>
+
+        <!-- CABECERA FIJA CON FOTO Y NOMBRE (solo pacientes existentes) -->
+        <div id="modal-header-paciente" class="oculto" style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--accent-light);border-radius:10px;margin-bottom:4px;">
+          <img id="modal-header-foto" src="" alt="" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--accent);display:none;cursor:pointer;">
+          <div id="modal-header-avatar" style="width:44px;height:44px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:white;flex-shrink:0;cursor:pointer;"></div>
+          <div>
+            <div id="modal-header-nombre" style="font-weight:700;font-size:15px;color:var(--text);"></div>
+            <div id="modal-header-meta" style="font-size:12px;color:var(--text-muted);"></div>
+            <div id="modal-header-foto-hint" style="font-size:11px;color:var(--accent-dark);font-weight:600;margin-top:2px;cursor:pointer;"></div>
+          </div>
+        </div>
+
+        <!-- SUBPESTAÑAS -->
+        <div class="modal-subtabs">
+          <button class="subtab-btn active" onclick="cambiarSubtab(0, this)">📋 Datos</button>
+          <button class="subtab-btn" onclick="cambiarSubtab(1, this)">📊 Historial</button>
+          <button class="subtab-btn" onclick="cambiarSubtab(2, this)">💊 Medicación</button>
+          <button class="subtab-btn" onclick="cambiarSubtab(3, this)">📅 Próxima Cita</button>
+        </div>
+      </div>
+
+      <!-- CONTENIDO SCROLLABLE -->
+      <div class="modal-body">
+
+      <!-- elementos ocultos necesarios para JS -->
+      <img id="preview-foto" style="display:none;" src="" alt="">
+      <input type="file" id="input-foto" accept="image/*" style="display:none;">
+
+      <!-- PESTAÑA 1: DATOS PERSONALES -->
+      <div class="subtab-content active" id="subtab-0">
+        <div class="modal-divider"></div>
+        <p class="modal-section-title">Datos personales</p>
+        <label for="input-nombre">Nombre</label>
+        <input type="text" id="input-nombre" placeholder="Nombre del paciente">
+        <label for="input-apellidos">Apellidos</label>
+        <input type="text" id="input-apellidos" placeholder="Apellidos">
+        <label for="input-fecha">Fecha de nacimiento</label>
+        <input type="date" id="input-fecha">
+        <p id="edad-calculada"></p>
+        <label for="selector-genero">Género</label>
+        <select id="selector-genero">
+          <option value="">— Sin especificar —</option>
+          <option value="mujer">Mujer</option>
+          <option value="hombre">Hombre</option>
+          <option value="otros">Otros</option>
+        </select>
+      </div>
+      
+      <!-- PESTAÑA 2: HISTORIAL CLÍNICO -->
+      <div class="subtab-content" id="subtab-1">
+        <p class="modal-section-title">Historia clínica</p>
+        <label for="input-diagnostico">Diagnóstico principal</label>
+        <textarea id="input-diagnostico" placeholder="Diagnóstico principal..." class="textarea-grande"></textarea>
+        <label for="input-tratamiento">Tratamiento</label>
+        <textarea id="input-tratamiento" placeholder="Tratamiento indicado..." class="textarea-grande"></textarea>
+        <div id="items-tratamiento-checkboxes" style="margin-top: 12px; padding: 12px; background: var(--accent-light); border-radius: 8px;"></div>
+        <label for="input-situacion-basal">Situación basal</label>
+        <textarea id="input-situacion-basal" placeholder="Estado de base del paciente (máx. 2-3 frases)..." class="textarea-compacto"></textarea>
+        <div class="modal-divider"></div>
+        <p class="modal-section-title">Evolutivos</p>
+        <label for="input-evolucion">Evolutivo 📝</label>
+        <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px; font-weight: 500;">
+          Hoy: <span id="fecha-evolutivo">cargando...</span>
+        </div>
+        <textarea id="input-evolucion" placeholder="Escribe aquí la evolución del paciente..." class="textarea-extra-grande" style="width: 100%; margin-bottom: 8px;"></textarea>
+        <button id="btn-añadir-evolucion" style="background: var(--accent); color: white; border: none; border-radius: 8px; padding: 12px 20px; font-weight: 600; cursor: pointer; font-size: 14px; width: 100%; margin-bottom: 12px;">+ Añadir Evolutivo</button>
+        <div id="evoluciones-list" style="max-height: 250px; overflow-y: auto;"></div>
+        <div class="modal-divider"></div>
+        <p class="modal-section-title">Pruebas, imágenes y vídeos</p>
+        <label for="input-imagenes" class="imagenes-label">+ Añadir imágenes de pruebas</label>
+        <input type="file" id="input-imagenes" accept="image/*" multiple style="display:none;">
+        <div id="preview-imagenes"></div>
+        <label for="input-videos" class="imagenes-label" style="margin-top: 12px;">+ Añadir vídeos</label>
+        <input type="file" id="input-videos" accept="video/*" multiple style="display:none;">
+        <div id="preview-videos"></div>
+      </div>
+      
+      <!-- PESTAÑA 3: MEDICACIÓN -->
+      <div class="subtab-content" id="subtab-2">
+        <p class="modal-section-title">Medicación registrada</p>
+        <div id="lista-medicaciones"></div>
+
+        <div class="modal-divider"></div>
+        <p class="modal-section-title">Añadir / editar medicación</p>
+        <label for="input-med-farmaco">Fármaco</label>
+        <input type="text" id="input-med-farmaco" placeholder="Ej: Baclofeno" list="lista-farmacos-datalist">
+        <datalist id="lista-farmacos-datalist"></datalist>
+        <div id="med-farmaco-info-catalogo"></div>
+
+        <label for="input-med-concentracion-mg">mg por comprimido/cápsula <span class="campo-opcional">— se rellena solo desde el catálogo, pero puedes cambiarlo para esta medicación</span></label>
+        <input type="number" id="input-med-concentracion-mg" placeholder="Ej: 500" min="0" step="any">
+
+        <label for="input-med-dosis-mg">Dosis por toma (mg) <span class="campo-opcional">— opcional, solo de referencia</span></label>
+        <input type="number" id="input-med-dosis-mg" placeholder="Ej: 10" min="0" step="any">
+        <div id="med-sugerencia-unidades"></div>
+
+        <div class="fila-2-columnas">
+          <div>
+            <label for="input-med-unidades-toma">Comprimidos/cápsulas por toma</label>
+            <input type="number" id="input-med-unidades-toma" placeholder="Ej: 1" min="0" step="0.5">
+          </div>
+          <div>
+            <label for="input-med-frecuencia">Veces al día</label>
+            <input type="number" id="input-med-frecuencia" placeholder="Ej: 3" min="0" step="1">
+          </div>
+        </div>
+
+        <label for="input-med-fecha-inicio">Fecha de inicio</label>
+        <input type="date" id="input-med-fecha-inicio">
+
+        <label class="check-inline">
+          <input type="checkbox" id="checkbox-med-auto-fin" checked>
+          Tomar hasta la próxima revisión (se recalcula si cambia la cita)
+        </label>
+        <div id="campo-med-fecha-fin-manual" class="oculto">
+          <label for="input-med-fecha-fin">Fecha de fin</label>
+          <input type="date" id="input-med-fecha-fin">
+        </div>
+
+        <label for="input-med-notas">Notas (opcional)</label>
+        <input type="text" id="input-med-notas" placeholder="Ej: tomar con las comidas">
+
+        <div class="medicacion-form-botones">
+          <button type="button" id="btn-cancelar-medicacion" class="btn-secundario">Cancelar</button>
+          <button type="button" id="btn-guardar-medicacion" class="btn-primario">+ Añadir medicación</button>
+        </div>
+      </div>
+
+      <!-- PESTAÑA 4: PRÓXIMA CITA -->
+      <div class="subtab-content" id="subtab-3">
+        <p class="modal-section-title">Próxima revisión</p>
+        <label for="input-revision">Fecha de revisión</label>
+        <input type="date" id="input-revision">
+        <label for="input-hora-revision">Hora</label>
+        <input type="time" id="input-hora-revision">
+        <label for="input-nota-revision">Nota</label>
+        <input type="text" id="input-nota-revision" placeholder="Nota de la revisión (opcional)">
+        <div id="medicacion-resumen-cita"></div>
+      </div>
+
+      </div><!-- fin modal-body -->
+
+      <!-- BOTONES — fuera del scroll para que siempre sean visibles -->
+      <div class="modal-botones">
+        <button id="btn-cancelar">Cancelar</button>
+        <button id="btn-eliminar" class="oculto btn-eliminar">🗑️ Eliminar</button>
+        <button id="btn-guardar">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "SAUCE - Historias Clínicas",
+  "short_name": "SAUCE",
+  "description": "Registro de pacientes para la ONG SAUCE en Camboya",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f4f6f4",
+  "theme_color": "#E8F281",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "any",
+      "type": "image/png"
+    }
+  ]
+}
